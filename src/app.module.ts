@@ -14,7 +14,7 @@ import { ItemEntity } from './items/entities/item.entity';
     password: '123456qaZ',
     database: 'seedra',
     entities: [ItemEntity],
-    synchronize: true,
+    synchronize: false,
 
   }), ItemsModule,],
   controllers: [AppController],
