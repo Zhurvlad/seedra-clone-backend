@@ -14,74 +14,73 @@ import {
 @Injectable()
 export class ItemsService {
   constructor(
-    @InjectRepository(ItemEntity)
-    private repository: Repository<ItemEntity>,
-  ) {
-  }
+	@InjectRepository(ItemEntity)
+	private repository: Repository<ItemEntity>,
+  ) {}
 
   create(dto: CreateItemDto) {
-    return this.repository.save(dto);
+	return this.repository.save(dto);
   }
 
   async findAll(): Promise<ItemEntity[]> {
-    return this.repository.find({
-      order: {
-        id: 'asc'
-      }
-    });
+	return this.repository.find({
+		order: {
+		id: 'asc'
+		}
+	});
   }
 
 
 
   async paginate(options: IPaginationOptions): Promise<Pagination<ItemEntity>> {
-    const qb = this.repository.createQueryBuilder('item');
-    qb.orderBy('item.id', 'ASC'); // Or whatever you need to do
+	const qb = this.repository.createQueryBuilder('item');
+	qb.orderBy('item.id', 'ASC'); // Or whatever you need to do
 
   /*  const items = this.repository.find()*/
    /* const [meta, m] = await qb.getManyAndCount()
     console.log( this.repository.createQueryBuilder('item'))*/
 
-    return paginate<ItemEntity>(qb, options);
+	return paginate<ItemEntity>(qb, options);
   }
 
   async search(dto: SearchItemsDto){
-    const qb = this.repository.createQueryBuilder('items')
+	const qb = this.repository.createQueryBuilder('items');
 
-    qb.limit(dto.limit || 0)
-    qb.take(dto.take || 3)
-    qb.orderBy('id', 'ASC')
+	qb.limit(dto.limit || 0);
+	qb.take(dto.take || 3);
+	qb.orderBy('id', 'ASC');
 
 
 
-    if (dto.type){
-      qb.andWhere(`items.type ILIKE :type`)
-    }
+	if (dto.type){
+		qb.andWhere(`items.type ILIKE :type`);
+	}
 
-    if (dto.title){
-      qb.andWhere(`items.title ILIKE :title`)
-    }
+	if (dto.title){
+		qb.andWhere(`items.title ILIKE :title`);
+	}
 
-    qb.setParameters({
-      type: `%${dto.type}%`,
-      title: `%${dto.title}%`
-    })
+	qb.setParameters({
+		type: `%${dto.type}%`,
+		title: `%${dto.title}%`
+	});
 
-    /*console.log(qb.getSql())*/
+	/*console.log(qb.getSql())*/
 
-    const [items, totalCount] = await qb.getManyAndCount()
+	const [items, totalCount] = await qb.getManyAndCount();
 
-    return {items, totalCount}
+	return {items, totalCount};
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} item`;
+	return `This action returns a #${id} item`;
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+	return `This action updates a #${id} item`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} item`;
+	return `This action removes a #${id} item`;
   }
 }

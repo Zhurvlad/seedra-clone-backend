@@ -15,6 +15,6 @@ export class ItemEntity {
   price: string;
 
   @Column({nullable: true })
-  type: string
+  type: string;
 
 }

@@ -3,5 +3,5 @@ export class SearchItemsDto {
   type?: string;
   limit?: number;
   take?: number;
-  sort?: 'DESC' | 'ASC'
+  sort?: 'DESC' | 'ASC';
 }
