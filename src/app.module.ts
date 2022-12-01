@@ -9,13 +9,14 @@ import { UsersEntity } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmService } from './modules/type-orm.service';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
 		ConfigModule.forRoot(),
   	TypeOrmModule.forRootAsync({
 			useClass : TypeOrmService
-  }), ItemsModule, UsersModule, AuthModule],
+  }), ItemsModule, UsersModule, AuthModule, CartModule],
   controllers: [AppController],
   providers: [AppService],
 })
