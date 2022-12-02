@@ -1,11 +1,15 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from '../../users/entities/user.entity';
+import { ItemEntity } from '../../items/entities/item.entity';
 
 
 @Entity('cart')
 export class CartEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  _id: number;
+
+  @Column()
+  itemsId: number;
 
   @Column()
   imageUrl: string;
@@ -16,10 +20,14 @@ export class CartEntity {
   @Column()
   price: string;
 
-  @Column()
+  @Column({default: 0})
   count: number
 
   @ManyToOne(() => UsersEntity, {eager: true} )
   @JoinColumn({ name: 'UserId' })
   user: UsersEntity;
+
+  /*@ManyToOne(() => ItemEntity, { nullable: false, eager: true })
+  @JoinColumn({ name: 'ItemsId' })
+  items: ItemEntity;*/
 }

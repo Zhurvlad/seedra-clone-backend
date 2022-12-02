@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,22 +12,70 @@ export class CartService {
   ) {
   }
 
-  async create(createCartDto: CreateCartDto, id: number) {
+  async create(createCartDto: CreateCartDto, userId: number, itemsId: number) {
 
-  const cart = await this.repository.save({
-     count: createCartDto.count,
-     imageUrl: createCartDto.imageUrl,
-     title: createCartDto.title,
-     price: createCartDto.price,
-    user:  {id: id}
-   })
+      const cart = await this.repository.save({
+        itemsId: createCartDto.itemsId,
+        count: createCartDto.count,
+        imageUrl: createCartDto.imageUrl,
+        title: createCartDto.title,
+        price: createCartDto.price,
+        user: { id: userId },
+      /*  items: { id: itemsId }*/
+      })
+
+      return await this.repository.find(  {where:{ _id: cart._id}})
+    }
 
 
-    return await this.repository.find(  {where:{ id: cart.id}})
+
+
+
+  async plusItem(id: number, itemsId: number) {
+
+    const find = await this.repository.findOne({ where: {itemsId: itemsId}}, );
+
+    if (!find) {
+      throw new NotFoundException('Статья не найдена');
+    }
+
+    //Инкрементим колличество просмотров статьи
+    await this.repository
+      .createQueryBuilder('cart')
+      .update()
+      .set({
+        count: () => 'count + 1',
+      })
+      .execute();
+
+    //Можно указать связь между Post и user с помощь {relations: ["user"]}
+    return this.repository.findOne({relations: ["user"], where: {itemsId: itemsId}}, );
   }
 
-  findAll() {
-    return `This action returns all cart`;
+  async minusItem(itemsId: number){
+    const find = await this.repository.findOne({ where: {itemsId: itemsId}}, );
+
+    if (!find) {
+      throw new NotFoundException('Статья не найдена');
+    }
+
+    //Инкрементим колличество просмотров статьи
+    await this.repository
+      .createQueryBuilder('cart')
+      .whereInIds(itemsId)
+      .update()
+      .set({
+        count: () => 'count - 1',
+      })
+      .execute();
+
+    //Можно указать связь между Post и user с помощь {relations: ["user"]}
+    return this.repository.findOne({relations: ["user"], where: {itemsId: itemsId}}, );
+  }
+
+
+  delete(id: number) {
+    return this.repository.delete(id);
   }
 
   findOne(id: number) {
