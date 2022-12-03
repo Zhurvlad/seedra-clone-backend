@@ -16,7 +16,7 @@ export class CartService {
 
       const cart = await this.repository.save({
         itemsId: createCartDto.itemsId,
-        count: createCartDto.count,
+        count: createCartDto.quantity,
         imageUrl: createCartDto.imageUrl,
         title: createCartDto.title,
         price: createCartDto.price,
@@ -44,7 +44,7 @@ export class CartService {
       .createQueryBuilder('cart')
       .update()
       .set({
-        count: () => 'count + 1',
+        quantity: () => 'quantity + 1',
       })
       .execute();
 
@@ -65,7 +65,7 @@ export class CartService {
       .whereInIds(itemsId)
       .update()
       .set({
-        count: () => 'count - 1',
+        quantity: () => 'quantity - 1',
       })
       .execute();
 

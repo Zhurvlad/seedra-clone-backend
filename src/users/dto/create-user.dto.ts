@@ -1,5 +1,6 @@
 import { IsEmail, IsString, Max, Min } from 'class-validator';
 import { IsNull } from 'typeorm';
+import { Role } from '../../role/role.enum';
 
 export class CreateUserDto {
 
@@ -12,4 +13,7 @@ export class CreateUserDto {
 
   @IsString()
   readonly password: string;
+
+  @IsString()
+  readonly role: Role[]
 }

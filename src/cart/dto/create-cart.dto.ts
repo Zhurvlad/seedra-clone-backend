@@ -15,6 +15,6 @@ export class CreateCartDto {
   price: string;
 
   @Column()
-  count: number
+  quantity: number
 
 }

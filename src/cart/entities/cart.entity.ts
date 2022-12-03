@@ -20,8 +20,11 @@ export class CartEntity {
   @Column()
   price: string;
 
+  @Column()
+  subtotalPrice: number
+
   @Column({default: 0})
-  count: number
+  quantity: number
 
   @ManyToOne(() => UsersEntity, {eager: true} )
   @JoinColumn({ name: 'UserId' })

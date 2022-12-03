@@ -1,5 +1,7 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { IsString } from 'class-validator';
+import { Role } from '../../role/role.enum';
 
 
 @Entity('users')
@@ -22,4 +24,8 @@ export class UsersEntity {
 
   @Column({select: false})
   password: string;
+
+
+  @Column()
+  roles: string
 }
