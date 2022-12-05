@@ -1,36 +1,23 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UsersEntity } from '../../users/entities/user.entity';
-import { ItemEntity } from '../../items/entities/item.entity';
+import { ProductEntity } from './product.entity';
 
 
-@Entity('cart')
+@Entity('cart', )
 export class CartEntity {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @Column()
-  itemsId: number;
-
-  @Column()
-  imageUrl: string;
-
-  @Column()
-  title: string;
-
-  @Column()
-  price: string;
-
-  @Column()
-  subtotalPrice: number
-
-  @Column({default: 0})
-  quantity: number
-
-  @ManyToOne(() => UsersEntity, {eager: true} )
-  @JoinColumn({ name: 'UserId' })
+  @OneToOne(() => UsersEntity, {eager: true})
+  @JoinColumn({name: 'userId'})
   user: UsersEntity;
 
-  /*@ManyToOne(() => ItemEntity, { nullable: false, eager: true })
-  @JoinColumn({ name: 'ItemsId' })
-  items: ItemEntity;*/
+  @Column({ nullable: true, type: 'jsonb'}, )
+  items: ProductEntity[]
+
+  @Column({default: 0})
+  totalPrice: number
+
+
+
 }

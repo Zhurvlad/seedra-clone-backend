@@ -3,7 +3,7 @@ import { UsersEntity } from '../../users/entities/user.entity';
 
 export class CreateCartDto {
   @Column()
-  itemsId: number
+  productId: number
 
   @Column()
   imageUrl: string;

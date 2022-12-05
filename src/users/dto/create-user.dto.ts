@@ -15,5 +15,5 @@ export class CreateUserDto {
   readonly password: string;
 
   @IsString()
-  readonly role: Role[]
+  readonly roles: Role[]
 }

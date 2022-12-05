@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { UsersEntity } from '../users/entities/user.entity';
 import { ItemEntity } from '../items/entities/item.entity';
+import { CartEntity } from '../cart/entities/cart.entity';
 
 
 @Injectable()
@@ -14,7 +15,8 @@ export class TypeOrmService implements TypeOrmOptionsFactory {
       synchronize: process.env.DATABASE_SYNCHRONIZE === 'true' && true,
       migrationsRun: process.env.DATABASE_MIGRATIONS_RUN === 'true' && true,
       logging: process.env.DATABASE_LOGGING === 'true' && true,
-      entities: [__dirname + '../../**/*.entity{.ts,.js}'],
+     /* entities: [__dirname + '../../!**!/!*.entity{.ts,.js}'],*/
+      entities: [UsersEntity, ItemEntity, CartEntity],
       migrations: [
         __dirname + '/migrations/**/*{.ts,.js}',
       ],

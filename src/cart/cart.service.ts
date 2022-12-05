@@ -12,7 +12,7 @@ export class CartService {
   ) {
   }
 
-  async create(createCartDto: CreateCartDto, userId: number, itemsId: number) {
+  /*async create(createCartDto: CreateCartDto, userId: number, itemsId: number) {
 
       const cart = await this.repository.save({
         itemsId: createCartDto.itemsId,
@@ -21,17 +21,83 @@ export class CartService {
         title: createCartDto.title,
         price: createCartDto.price,
         user: { id: userId },
-      /*  items: { id: itemsId }*/
+      /!*  items: { id: itemsId }*!/
       })
 
       return await this.repository.find(  {where:{ _id: cart._id}})
+    }*/
+
+
+  async addItemToCart(cartDTO: CreateCartDto, userId: number) {
+    const {productId, quantity, price, title, imageUrl } = cartDTO;
+    const subTotalPrice = quantity * Number(price);
+
+
+    const cart = await this.getCart(userId);
+
+
+    if (cart) {
+      const itemIndex = await cart.items.findIndex((item) => item.productId == productId);
+      if (itemIndex > -1) {
+        let item = cart.items[itemIndex];
+        item.quantity = Number(item.quantity) + Number(quantity);
+        item.subtotalPrice = item.quantity * Number(item.price);
+        cart.items[itemIndex] = item;
+        this.recalculateCart(cart);
+        return this.repository.save(cart);
+      } else {
+        cart.items.push({ ...cartDTO, subTotalPrice });
+        this.recalculateCart(cart);
+        return this.repository.save(cart);
+      }
+    } else {
+      return await this.createCart(userId, cartDTO, subTotalPrice, price);
     }
+  }
+
+  async createCart(userId: number, cartDTO: Omit<CreateCartDto, '_id'>, subtotalPrice: number, totalPrice: string) {
+  return this.repository.save({
+    user: {id: userId},
+    items: [{ ...cartDTO, subtotalPrice }],
+    totalPrice: Number(totalPrice)
+  });
+
+  }
 
 
+ /* async deleteCart(userId: string): Promise<Cart> {
+    const deletedCart = await this.repository.findOneAndRemove({ userId });
+    return deletedCart;
+  }
+*/
+  private recalculateCart(cart: CartEntity) {
+    cart.totalPrice = 0;
+    cart.items.forEach(item => {
+      cart.totalPrice += (item.quantity * Number(item.price));
+    })
+  }
 
+  async getCart(userId: number): Promise<CartEntity[] | any> {
 
+    return await this.repository.findOne({ where : {
+        // @ts-ignore
 
-  async plusItem(id: number, itemsId: number) {
+        user: userId
+      }});
+  }
+
+ /* async removeItemFromCart(userId: string, productId: string): Promise<any> {
+    const cart = await this.getCart(userId);
+
+    const itemIndex = cart.items.findIndex((item) => item.productId == productId);
+
+    if (itemIndex > -1) {
+      cart.items.splice(itemIndex, 1);
+      return cart.save();
+    }
+  }*/
+
+ /* async plusItem(id: number, itemsId: number) {
 
     const find = await this.repository.findOne({ where: {itemsId: itemsId}}, );
 
@@ -71,7 +137,7 @@ export class CartService {
 
     //Можно указать связь между Post и user с помощь {relations: ["user"]}
     return this.repository.findOne({relations: ["user"], where: {itemsId: itemsId}}, );
-  }
+  }*/
 
 
   delete(id: number) {
