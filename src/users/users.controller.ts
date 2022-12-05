@@ -20,7 +20,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard, RolesGuards)
   @Roles(Role.User)
-  @Get('/user')
+  @Get('/me')
   getProfile(@Request() req) {
     return req.user;
   }
@@ -31,6 +31,8 @@ export class UsersController {
   getDashboard(@Request() req) {
     return req.user;
   }
+
+
 
   @Get()
   findAll() {

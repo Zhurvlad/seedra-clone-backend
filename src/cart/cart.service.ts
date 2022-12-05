@@ -32,20 +32,22 @@ export class CartService {
     const {productId, quantity, price, title, imageUrl } = cartDTO;
     const subTotalPrice = quantity * Number(price);
 
-
     const cart = await this.getCart(userId);
 
-
     if (cart) {
-      const itemIndex = await cart.items.findIndex((item) => item.productId == productId);
+      // @ts-ignore
+      const itemIndex = cart.items.findIndex((item) => item.productId == productId);
       if (itemIndex > -1) {
         let item = cart.items[itemIndex];
         item.quantity = Number(item.quantity) + Number(quantity);
-        item.subtotalPrice = item.quantity * Number(item.price);
+        item.subTotalPrice = item.quantity * Number(item.price);
         cart.items[itemIndex] = item;
         this.recalculateCart(cart);
         return this.repository.save(cart);
       } else {
+
+
+        // @ts-ignore
         cart.items.push({ ...cartDTO, subTotalPrice });
         this.recalculateCart(cart);
         return this.repository.save(cart);
@@ -65,11 +67,10 @@ export class CartService {
   }
 
 
- /* async deleteCart(userId: string): Promise<Cart> {
-    const deletedCart = await this.repository.findOneAndRemove({ userId });
-    return deletedCart;
+  async deleteCart(userId: number) {
+   return  await this.repository.delete({user: { id: userId }});
   }
-*/
+
   private recalculateCart(cart: CartEntity) {
     cart.totalPrice = 0;
     cart.items.forEach(item => {
@@ -77,25 +78,23 @@ export class CartService {
     })
   }
 
-  async getCart(userId: number): Promise<CartEntity[] | any> {
-
-    return await this.repository.findOne({ where : {
-        // @ts-ignore
-
-        user: userId
-      }});
+  async getCart(userId: number): Promise<CartEntity> {
+    return await this.repository.findOneBy( {user: { id: userId }});
   }
 
- /* async removeItemFromCart(userId: string, productId: string): Promise<any> {
+  async removeItemFromCart(userId: number, productId: string): Promise<any> {
     const cart = await this.getCart(userId);
 
+    // @ts-ignore
     const itemIndex = cart.items.findIndex((item) => item.productId == productId);
 
     if (itemIndex > -1) {
       cart.items.splice(itemIndex, 1);
-      return cart.save();
+
+      this.recalculateCart(cart);
+      return this.repository.save(cart)
     }
-  }*/
+  }
 
  /* async plusItem(id: number, itemsId: number) {
 

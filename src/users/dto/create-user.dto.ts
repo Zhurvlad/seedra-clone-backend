@@ -8,12 +8,12 @@ export class CreateUserDto {
   readonly fullName: string;
 
   @IsString()
-  @IsEmail()
+  @IsEmail(undefined,{message: 'Enter the correct email address'})
   readonly email: string;
 
   @IsString()
   readonly password: string;
 
   @IsString()
-  readonly roles: Role[]
+  readonly roles?: string
 }

@@ -27,7 +27,7 @@ export class ProductEntity {
   price: string;
 
   @Column()
-  subtotalPrice: number
+  subTotalPrice: number
 
   @Column({default: 0})
   quantity: number

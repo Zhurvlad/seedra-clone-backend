@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  NotFoundException,
+} from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { UserEmail } from '../decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ItemsId } from '../decorators/items.decorator';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../role/role.enum';
+import { RolesGuards } from '../role/guards/roles.guards';
 
 @Controller('cart')
 export class CartController {
@@ -17,13 +31,16 @@ export class CartController {
     return this.cartService.create(createCartDto, userId, itemId);
   }*/
 
-  @UseGuards(JwtAuthGuard)
-  /*@Roles(Role.User)*/
+  @UseGuards(JwtAuthGuard, RolesGuards)
+  @Roles(Role.User)
   @Post('/create')
   async addItemToCart(@Request() req, @Body() cartDTO: CreateCartDto) {
     const userId = req.user.id;
     return await this.cartService.addItemToCart(cartDTO, userId);
   }
+
+
+
 
 /*
   @UseGuards(JwtAuthGuard)
@@ -35,19 +52,18 @@ export class CartController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   delete(@Param('id') id: string) {
-    return this.cartService.delete(+id);
+    return this.cartService.deleteCart(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
-
-  /*@Delete('/')
+  @UseGuards(JwtAuthGuard, RolesGuards)
+  @Roles(Role.User)
+  @Delete('/')
   async removeItemFromCart(@Request() req, @Body() { productId }) {
     const userId = req.user.userId;
     const cart = await this.cartService.removeItemFromCart(userId, productId);
     if (!cart) throw new NotFoundException('Item does not exist');
     return cart;
   }
-*/
   /*@UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Delete('/:id')
