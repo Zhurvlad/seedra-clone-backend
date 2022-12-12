@@ -31,12 +31,20 @@ export class CartController {
     return this.cartService.create(createCartDto, userId, itemId);
   }*/
 
-  @UseGuards(JwtAuthGuard, RolesGuards)
+  @UseGuards(JwtAuthGuard)
   @Roles(Role.User)
   @Post('/create')
   async addItemToCart(@Request() req, @Body() cartDTO: CreateCartDto) {
     const userId = req.user.id;
     return await this.cartService.addItemToCart(cartDTO, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+ /* @Roles(Role.User)*/
+  @Get()
+  async getCart(@Request() req) {
+    const userId = req.user.id;
+    return this.cartService.getCart(userId);
   }
 
 
@@ -49,17 +57,18 @@ export class CartController {
     return this.cartService.addItemToCart(createCartDto, userId );
   }*/
 
-  @Delete(':id')
+
   @UseGuards(JwtAuthGuard)
+  @Delete('clear/:id')
   delete(@Param('id') id: string) {
     return this.cartService.deleteCart(+id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuards)
+  @UseGuards(JwtAuthGuard)
   @Roles(Role.User)
-  @Delete('/')
-  async removeItemFromCart(@Request() req, @Body() { productId }) {
-    const userId = req.user.userId;
+  @Delete('remove/:id')
+  async removeItemFromCart(@Request() req, @Param('id') productId:string ) {
+    const userId = req.user.id;
     const cart = await this.cartService.removeItemFromCart(userId, productId);
     if (!cart) throw new NotFoundException('Item does not exist');
     return cart;
@@ -86,7 +95,7 @@ export class CartController {
   }*/
 
 
-  @Get(':id')
+ /* @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cartService.findOne(+id);
   }
@@ -96,5 +105,5 @@ export class CartController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.cartService.remove(+id);
-  }
+  }*/
 }

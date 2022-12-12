@@ -73,7 +73,7 @@ export class ItemsService {
   }
 
   findOne(id: number) {
-	return `This action returns a #${id} item`;
+	return this.repository.findOne({where: {id: id}})
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {

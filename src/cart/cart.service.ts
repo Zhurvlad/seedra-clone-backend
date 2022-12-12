@@ -46,7 +46,6 @@ export class CartService {
         return this.repository.save(cart);
       } else {
 
-
         // @ts-ignore
         cart.items.push({ ...cartDTO, subTotalPrice });
         this.recalculateCart(cart);
@@ -73,6 +72,7 @@ export class CartService {
 
   private recalculateCart(cart: CartEntity) {
     cart.totalPrice = 0;
+    cart.totalCount += 1
     cart.items.forEach(item => {
       cart.totalPrice += (item.quantity * Number(item.price));
     })

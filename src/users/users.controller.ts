@@ -18,11 +18,11 @@ export class UsersController {
 	return this.usersService.create(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuards)
+  @UseGuards(JwtAuthGuard)
   @Roles(Role.User)
   @Get('/me')
   getProfile(@Request() req) {
-    return req.user;
+    return this.usersService.findOne(req.user.email);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuards)
@@ -39,6 +39,8 @@ export class UsersController {
 	return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuards)
+  @Roles(Role.User)
   @Get('find')
   findOne(@Body() dto: LoginUserDto) {
 	return this.usersService.findOne(dto.email);

@@ -30,14 +30,16 @@ export class AuthController {
     return this.authService.login(req.user)
   }
 
-  @UsePipes(new ValidationPipe())
+
   @Post('register')
+  @UsePipes(new ValidationPipe())
   register(@Body() dto: CreateUserDto){
     return this.authService.register(dto)
   }
 
-  @UsePipes(new ValidationPipe())
+
   @Post('register/admin')
+  @UsePipes(new ValidationPipe())
   registerAdmin(@Body() dto: CreateUserDto, role: string){
     return this.authService.registerAdmin(dto, role)
   }

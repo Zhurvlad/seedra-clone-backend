@@ -19,5 +19,9 @@ export class CartEntity {
   totalPrice: number
 
 
+  @Column({default: 0})
+  totalCount: number
+
+
 
 }

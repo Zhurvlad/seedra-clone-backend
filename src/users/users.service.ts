@@ -22,7 +22,7 @@ export class UsersService {
   async findOne(email: string) {
    const user = await this.repository.findOne({
      where: { email } ,
-     select: ['email','fullName', 'id', 'password']})
+     select: ['email','fullName', 'id',]})
 
     /*const {password, ...result} = user*/
     return user
