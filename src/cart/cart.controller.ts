@@ -59,9 +59,10 @@ export class CartController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Delete('clear/:id')
-  delete(@Param('id') id: string) {
-    return this.cartService.deleteCart(+id);
+  @Delete('clear')
+  async delete(@Request() req ) {
+    const userId = req.user.id;
+    return this.cartService.deleteCart(+userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -82,18 +83,19 @@ export class CartController {
     return cart;
   }
 */
-  /*@Patch('plus')
+  @Patch('plus/:id')
   @UseGuards(JwtAuthGuard)
-  updatePlus(@Param('id') id: number, @ItemsId() itemId: number) {
-    return this.cartService.plusItem(id, itemId);
+  updatePlus(@Request() req, @Param('id') productId:string) {
+    const userId = req.user.id;
+    return this.cartService.plusItem(userId, productId);
   }
 
-  @Patch('minus')
+  @Patch('minus/:id')
   @UseGuards(JwtAuthGuard)
-  updateMinus(@ItemsId() itemId: number){
-    return this.cartService.minusItem(itemId)
-  }*/
-
+  updateMinus(@Request() req, @Param('id') productId:string){
+    const userId = req.user.id;
+    return this.cartService.minusItem(userId, productId)
+  }
 
  /* @Get(':id')
   findOne(@Param('id') id: string) {

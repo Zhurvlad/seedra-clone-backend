@@ -16,7 +16,7 @@ export class CartEntity {
   items: ProductEntity[]
 
   @Column({default: 0})
-  totalPrice: number
+  totalPrice: string
 
 
   @Column({default: 0})

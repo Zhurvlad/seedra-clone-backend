@@ -32,6 +32,8 @@ export class CartService {
     const {productId, quantity, price, title, imageUrl } = cartDTO;
     const subTotalPrice = quantity * Number(price);
 
+
+
     const cart = await this.getCart(userId);
 
     if (cart) {
@@ -39,8 +41,10 @@ export class CartService {
       const itemIndex = cart.items.findIndex((item) => item.productId == productId);
       if (itemIndex > -1) {
         let item = cart.items[itemIndex];
+
         item.quantity = Number(item.quantity) + Number(quantity);
-        item.subTotalPrice = item.quantity * Number(item.price);
+        item.subTotalPrice = Number(item.quantity) * Number(item.price);
+
         cart.items[itemIndex] = item;
         this.recalculateCart(cart);
         return this.repository.save(cart);
@@ -57,7 +61,10 @@ export class CartService {
   }
 
   async createCart(userId: number, cartDTO: Omit<CreateCartDto, '_id'>, subtotalPrice: number, totalPrice: string) {
-  return this.repository.save({
+
+
+    return this.repository.save({
+      // @ts-ignore
     user: {id: userId},
     items: [{ ...cartDTO, subtotalPrice }],
     totalPrice: Number(totalPrice)
@@ -67,14 +74,22 @@ export class CartService {
 
 
   async deleteCart(userId: number) {
-   return  await this.repository.delete({user: { id: userId }});
+    const cart = await this.getCart(userId);
+
+    cart.items = []
+    cart.totalCount = 0
+    // @ts-ignore
+    cart.totalPrice = 0;
+
+    return this.repository.save(cart)
   }
 
   private recalculateCart(cart: CartEntity) {
+    // @ts-ignore
     cart.totalPrice = 0;
-    cart.totalCount += 1
+    cart.totalCount = cart.items.reduce((sum, obj) => sum + obj.quantity, 0)
     cart.items.forEach(item => {
-      cart.totalPrice += (item.quantity * Number(item.price));
+      cart.totalPrice += Number((item.quantity * Number(item.price)).toFixed(2));
     })
   }
 
@@ -90,53 +105,45 @@ export class CartService {
 
     if (itemIndex > -1) {
       cart.items.splice(itemIndex, 1);
-
-      this.recalculateCart(cart);
+      cart.totalCount = cart.items.reduce((sum, obj) => sum + obj.quantity, 0)
+      /*this.recalculateCart(cart);*/
       return this.repository.save(cart)
     }
   }
 
- /* async plusItem(id: number, itemsId: number) {
+  async plusItem(userId: number, productId: string) {
+    const cart = await this.getCart(userId);
 
-    const find = await this.repository.findOne({ where: {itemsId: itemsId}}, );
+    // @ts-ignore
+    const find = cart.items.find((item) => item.productId == productId)
 
     if (!find) {
       throw new NotFoundException('Статья не найдена');
     }
 
-    //Инкрементим колличество просмотров статьи
-    await this.repository
-      .createQueryBuilder('cart')
-      .update()
-      .set({
-        quantity: () => 'quantity + 1',
-      })
-      .execute();
+    find.quantity += 1
+    find.subTotalPrice = Number((find.quantity * Number(find.price)).toFixed(2))
+    this.recalculateCart(cart);
+    return this.repository.save(cart)
 
-    //Можно указать связь между Post и user с помощь {relations: ["user"]}
-    return this.repository.findOne({relations: ["user"], where: {itemsId: itemsId}}, );
   }
 
-  async minusItem(itemsId: number){
-    const find = await this.repository.findOne({ where: {itemsId: itemsId}}, );
+  async minusItem(userId: number, productId: string){
+    const cart = await this.getCart(userId);
+
+    // @ts-ignore
+    const find = cart.items.find((item) => item.productId == productId)
 
     if (!find) {
       throw new NotFoundException('Статья не найдена');
     }
 
-    //Инкрементим колличество просмотров статьи
-    await this.repository
-      .createQueryBuilder('cart')
-      .whereInIds(itemsId)
-      .update()
-      .set({
-        quantity: () => 'quantity - 1',
-      })
-      .execute();
+    find.quantity -= 1
+    find.subTotalPrice = Number((find.quantity * Number(find.price)).toFixed(2))
+    this.recalculateCart(cart);
+    return this.repository.save(cart)
 
-    //Можно указать связь между Post и user с помощь {relations: ["user"]}
-    return this.repository.findOne({relations: ["user"], where: {itemsId: itemsId}}, );
-  }*/
+  }
 
 
   delete(id: number) {

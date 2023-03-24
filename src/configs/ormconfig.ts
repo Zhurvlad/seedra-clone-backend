@@ -1,4 +1,6 @@
-
+import { UsersEntity } from '../users/entities/user.entity';
+import { ItemEntity } from '../items/entities/item.entity';
+import { CartEntity } from '../cart/entities/cart.entity';
 
 
 const config = {
@@ -8,15 +10,13 @@ const config = {
   migrationsRun: process.env.DATABASE_MIGRATIONS_RUN,
   acquireTimeout: process.env.DATABASE_TIMEOUT,
   synchronize: process.env.DATABASE_SYNCHRONIZE,
-  entities: [
-    [__dirname + '/**/*.entity{.ts,.js}']
-  ],
-  migrations: [
-    '/migrations/**/*{.ts,.js}',
-  ],
+    entities: [UsersEntity, ItemEntity, CartEntity],
+  /*migrations: [
+    '/migrations/!**!/!*{.ts,.js}',
+  ],*/
   cli: {
    /* entitiesDir: 'src/entities',*/
-    migrationsDir: 'src/migrations',
+    /*migrationsDir: 'src/migrations',*/
   },
 };
 
